@@ -1,7 +1,9 @@
 import React from 'react';
-import ContactForm from './Components/ContactForm';
+import ContactForm from './Components/ContactForm/ContactForm';
 import Title from './Components/Title/Title';
-// import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid';
+import ContactList from './Components/ContactList/ContactList';
+import Filter from './Components/Filter/Filter';
 
 export default class App extends React.Component {
   state = {
@@ -14,15 +16,69 @@ export default class App extends React.Component {
     filter: '',
   };
 
-  formSubmitHandler = data => {
-    console.log(data);
+  addContact = (name, number) => {
+    const contact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+
+    const findContact = this.state.contacts.find(
+      contact => contact.name === name,
+    );
+
+    if (findContact) {
+      alert(`${findContact.name} is already in contacts`);
+      return;
+    }
+
+    this.setState(prevState => ({
+      contacts: [...prevState.contacts, contact],
+    }));
+  };
+
+  handleChangeFilter = filter => {
+    this.setState({ filter });
+  };
+
+  filterInputId = nanoid();
+
+  deleteContact = contactId => {
+    this.setState(prev => ({
+      contacts: prev.contacts.filter(contact => contactId !== contact.id),
+    }));
+  };
+
+  filterByName = () => {
+    const { contacts, filter } = this.state;
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase()),
+    );
   };
 
   render() {
-    const { contacts, filter } = this.state;
+    const { contacts, value } = this.state;
+    const filteredContacts = this.filterByName();
+
     return (
       <Title title="Phonebook">
-        <ContactForm onSubmit={this.formSubmitHandler} contacts={contacts} />
+        <ContactForm onSubmit={this.addContact}></ContactForm>
+
+        {contacts.length > 0 && (
+          <Title title="Contacts">
+            {contacts.length > 2 && (
+              <Filter
+                id={this.filterInputId}
+                value={value}
+                onChangeFilter={this.handleChangeFilter}
+              />
+            )}
+            <ContactList
+              onDeleteContact={this.deleteContact}
+              contacts={filteredContacts}
+            ></ContactList>
+          </Title>
+        )}
       </Title>
     );
   }

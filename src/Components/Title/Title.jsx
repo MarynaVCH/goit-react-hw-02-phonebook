@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import { Container, Title } from './Layout.styled';
 
 export default function Title({ title, children }) {
   return (
@@ -10,8 +9,3 @@ export default function Title({ title, children }) {
     </div>
   );
 }
-
-Title.propTypes = {
-  title: PropTypes.string.isRequired,
-  children: PropTypes.node,
-};
